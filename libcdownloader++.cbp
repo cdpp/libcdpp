@@ -4,31 +4,50 @@
 	<Project>
 		<Option title="libcdownloader++" />
 		<Option pch_mode="2" />
-		<Option compiler="copy_of_gnu_gcc_compiler" />
+		<Option compiler="gnu_gcc_compiler_49" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/libcdownloader++" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="" />
+				<Option output="bin/Debug/cdownloader++" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin/Debug" />
 				<Option object_output="obj/Debug/" />
-				<Option type="2" />
-				<Option compiler="copy_of_gnu_gcc_compiler" />
+				<Option type="3" />
+				<Option compiler="gnu_gcc_compiler_49" />
 				<Option createDefFile="1" />
+				<Option projectCompilerOptionsRelation="0" />
+				<Option projectLinkerOptionsRelation="0" />
+				<Option projectIncludeDirsRelation="0" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Option projectLibDirsRelation="0" />
 				<Compiler>
+					<Add option="-O" />
+					<Add option="-pedantic-errors" />
+					<Add option="-pedantic" />
 					<Add option="-std=c++11" />
 					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add directory="include" />
+					<Add option="-fPIC" />
 				</Compiler>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/libcdownloader++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/cdownloader++" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
-				<Option compiler="copy_of_gnu_gcc_compiler" />
+				<Option compiler="gnu_gcc_compiler_49" />
 				<Option createDefFile="1" />
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++11" />
+					<Add option="-Wextra" />
+					<Add option="-Wall" />
+					<Add option="-fPIC" />
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
@@ -37,14 +56,22 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-pedantic" />
 			<Add option="-std=c++11" />
+			<Add option="-Wextra" />
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-fPIC" />
+			<Add directory="include" />
 		</Compiler>
+		<Linker>
+			<Add option="-lcrypto" />
+		</Linker>
+		<Unit filename="include/Container/RSDFParser.h" />
 		<Unit filename="include/Logger.h" />
-		<Unit filename="include/RSDFParser.h" />
+		<Unit filename="include/basics/aes.h" />
+		<Unit filename="src/Container/RSDFParser.cpp" />
 		<Unit filename="src/Logger.cpp" />
-		<Unit filename="src/RSDFParser.cpp" />
 		<Unit filename="src/basics/aes.cpp" />
 		<Extensions>
 			<DoxyBlocks>
