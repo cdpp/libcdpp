@@ -1,2 +1,4 @@
 obj/
 bin/
+doxygen/doxygen.log
+doxygen/html/
