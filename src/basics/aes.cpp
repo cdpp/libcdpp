@@ -20,7 +20,7 @@
  *
  ***********************************************/
 
-int aes_decrypt_ecb(unsigned char* decrypted, unsigned char* encrypted, int length, unsigned char* key, unsigned char* iv)
+int aes_decrypt(unsigned char* decrypted, unsigned char* encrypted, int length, unsigned char* key, unsigned char* iv, uint8_t type)
 {
     static cdpp::Logger logger = cdpp::Logger::getLogger();
     int o_len = length;
@@ -32,7 +32,21 @@ int aes_decrypt_ecb(unsigned char* decrypted, unsigned char* encrypted, int leng
     OPENSSL_config(NULL);
 
     EVP_CIPHER_CTX *ctx;
+	const EVP_CIPHER *cipher;
 
+	switch (type) {
+		case CDPP_AES_ECB: {
+			cipher = EVP_aes_192_ecb();
+			break;
+		}
+		case CDPP_AES_CFB: {
+			cipher = EVP_aes_192_cfb();
+			break;
+		}
+		default: {
+			cipher = EVP_aes_192_ecb();
+		}
+	}
     /* Create and initialise the context */
     if(!(ctx = EVP_CIPHER_CTX_new())) {
         logger.error("Could not initalisize the Cipher Context.");
@@ -40,7 +54,7 @@ int aes_decrypt_ecb(unsigned char* decrypted, unsigned char* encrypted, int leng
     }
 
     /* Initialise the decryption operation. */
-    if(1 != EVP_DecryptInit_ex(ctx, EVP_aes_192_ecb(), NULL, key, iv)) {
+    if(1 != EVP_DecryptInit_ex(ctx, cipher, NULL, key, iv)) {
         logger.error("Could not setup decryption, maybe key or iv are not valid.");
         return -1;
     }

@@ -5,6 +5,14 @@
 		<Option title="libcdownloader++" />
 		<Option pch_mode="2" />
 		<Option compiler="gnu_gcc_compiler_49" />
+		<MakeCommands>
+			<Build command="" />
+			<CompileFile command="" />
+			<Clean command="" />
+			<DistClean command="" />
+			<AskRebuildNeeded command="" />
+			<SilentBuild command=" &gt; $(CMD_NULL)" />
+		</MakeCommands>
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/cdownloader++" prefix_auto="1" extension_auto="1" />
@@ -19,12 +27,12 @@
 				<Option projectResourceIncludeDirsRelation="0" />
 				<Option projectLibDirsRelation="0" />
 				<Compiler>
-					<Add option="-O" />
-					<Add option="-pedantic-errors" />
 					<Add option="-pedantic" />
 					<Add option="-std=c++11" />
+					<Add option="-Wextra" />
 					<Add option="-Wall" />
-					<Add option="-fPIC" />
+					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 				<MakeCommands>
 					<Build command="" />
@@ -56,23 +64,23 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-pedantic" />
 			<Add option="-std=c++11" />
 			<Add option="-Wextra" />
 			<Add option="-Wall" />
-			<Add option="-fexceptions" />
 			<Add option="-fPIC" />
 			<Add directory="include" />
 		</Compiler>
 		<Linker>
-			<Add option="-lcrypto" />
+			<Add option="-lssl" />
 		</Linker>
 		<Unit filename="include/Container/RSDFParser.h" />
 		<Unit filename="include/Logger.h" />
 		<Unit filename="include/basics/aes.h" />
+		<Unit filename="include/basics/base64.h" />
 		<Unit filename="src/Container/RSDFParser.cpp" />
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/basics/aes.cpp" />
+		<Unit filename="src/basics/base64.cpp" />
 		<Extensions>
 			<DoxyBlocks>
 				<comment_style block="4" line="0" />

@@ -9,8 +9,8 @@ namespace cdpp {
         public:
             RSDFParser();
             virtual ~RSDFParser();
-            char* parse(char* encrypted);
-            std::vector<std::string> parseFile(std::string filename);
+            std::vector<std::string*> parse(std::string content);
+            std::vector<std::string*> parseFile(std::string filename);
         protected:
         private:
             const unsigned char key_[24] = {0x8C, 0x35, 0x19, 0x2D, 0x96, 0x4D,
@@ -20,6 +20,9 @@ namespace cdpp {
             const unsigned char iv_[16] = { 0xa3, 0xd5, 0xa3, 0x3c, 0xb9, 0x5a,
                                             0xc1, 0xf5, 0xcb, 0xdb, 0x1a, 0xd2,
                                             0x5c, 0xb0, 0xa7, 0xaa};
+        	const std::vector<char> std_patterns_ = {'\n', '\r', '\xda'};
+			int searchPattern(const char* str, const int length, const std::vector<char> patterns);
+			void hex_to_bytes(const std::string& str, unsigned char* data);
     };
 }
 #endif // RSDFPARSER_H
