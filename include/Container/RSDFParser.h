@@ -1,15 +1,34 @@
 #ifndef RSDFPARSER_H
 #define RSDFPARSER_H
+/********************************************//**
+ * \file RSDFParser.h
+***********************************************/
 #include <string>
 #include <vector>
 
 namespace cdpp {
+    /********************************************//**
+     * \class RSDFParser
+	 * \brief Class for parsing RSDF link container
+     ***********************************************/
     class RSDFParser
     {
         public:
+        	//! Standard constructor
             RSDFParser();
+            //! Standard destructor
             virtual ~RSDFParser();
+            /********************************************//**
+			 * \brief Parse given content of rsdf file
+             * \param content Content of file
+             * \return List of decrypted URLs
+             ***********************************************/
             std::vector<std::string> parse(std::string content);
+            /********************************************//**
+			 * \brief Parse given rsdf file
+             * \param filename Name and path of file, which should be parsed
+             * \return List of decrypted URLs
+             ***********************************************/
             std::vector<std::string> parseFile(std::string filename);
         protected:
         private:
@@ -20,7 +39,9 @@ namespace cdpp {
             const unsigned char iv_[16] = { 0xa3, 0xd5, 0xa3, 0x3c, 0xb9, 0x5a,
                                             0xc1, 0xf5, 0xcb, 0xdb, 0x1a, 0xd2,
                                             0x5c, 0xb0, 0xa7, 0xaa};
+			//! Characters to splitt lines, 0xDA because of some fails (linkcrypt.ws)
         	const std::vector<char> std_patterns_ = {'\n', '\r', '\xda'};
+        	//! Returns position of the occurrence of the pattern
 			int searchPattern(const char* str, const int length, const std::vector<char> patterns);
     };
 }

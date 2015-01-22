@@ -27,14 +27,16 @@ namespace cdpp {
 
 	#define LOGGING_LEVEL_DEFAULT 0x00
 	#define LOGGING_LEVEL_DEBUG 0x01
-	#define LOGGING_LEVEL_WARN 0x02
-	#define LOGGING_LEVEL_ERROR 0x03
-	#define LOGGING_LEVEL_FATAL 0x04
+	#define LOGGING_LEVEL_INFO 0x02
+	#define LOGGING_LEVEL_WARN 0x03
+	#define LOGGING_LEVEL_ERROR 0x04
+	#define LOGGING_LEVEL_FATAL 0x05
 
     #define LOGGING_COLOR_DEBUG "\033[1;36m"
+    #define LOGGING_COLOR_INFO "\033[1;32m"
     #define LOGGING_COLOR_WARN "\033[1;33m"
     #define LOGGING_COLOR_ERROR "\033[1;31m"
-    #define LOGGING_COLOR_FATAL "\033[5;41m"
+    #define LOGGING_COLOR_FATAL "\033[1;5;31;47m"
     #define LOGGING_COLOR_DEFAULT "\033[0m"
 
     /********************************************//**
@@ -44,13 +46,22 @@ namespace cdpp {
     class Logger
     {
         public:
-
+            /********************************************//**
+			 * \brief Get Logger instance
+             * \return Static logger instance (Singleton)
+             ***********************************************/
             static Logger& getLogger();
+            /********************************************//**
+			 * \brief Setup type of logger and if needed filename where to log
+             * \param type Type of logger
+             * \param filename If Hybrid- or filelogger this is the file where to log
+             ***********************************************/
             void setupLogger(uint8_t type, std::string filename = "");
-            void debug(std::string message);
-            void warn(std::string message);
-            void error(std::string message);
-            void fatal(std::string message);
+            void debug(const std::string message);
+            void info(const std::string message);
+            void warn(const std::string message);
+            void error(const std::string message);
+            void fatal(const std::string message);
         private:
             Logger(){}; //!< Singleton
             inline std::string getLevelStr(const uint8_t level);
@@ -69,9 +80,9 @@ namespace cdpp {
             uint8_t type_ = CONSOLE_LOGGER;
             std::string filename_;
             const std::string pattern_ = "%highlight{%level - %date} - %msg";
-            const std::string color_[5] = {	LOGGING_COLOR_DEFAULT,	LOGGING_COLOR_DEBUG,
-											LOGGING_COLOR_WARN,		LOGGING_COLOR_ERROR,
-											LOGGING_COLOR_FATAL};
+            const std::string color_[6] = {	LOGGING_COLOR_DEFAULT,	LOGGING_COLOR_DEBUG,
+											LOGGING_COLOR_INFO,		LOGGING_COLOR_WARN,
+											LOGGING_COLOR_ERROR,	LOGGING_COLOR_FATAL};
     };
 }
 #endif // LOGGER_H

@@ -14,11 +14,19 @@ Logger& Logger::getLogger()
     return logger;
 }
 
+/********************************************//**
+ * \details Set up the logger by using the available logger types.
+ *			Filename is only needed if you use Hybrid- or Filelogger.
+ * \exception std::invalid_argument If filename is needed but empty.
+ * \sa HYBRID_LOGGER
+ * \sa FILE_LOGGER
+ ***********************************************/
+
 void Logger::setupLogger(uint8_t type, std::string filename)
 {
     if (type == CONSOLE_LOGGER) {
         type_ = CONSOLE_LOGGER;
-    } else if (type == FILE_LOGGER || type == HYBRID_LOGGER) {
+    } else if ((type == FILE_LOGGER) || (type == HYBRID_LOGGER)) {
         if(filename.empty())
             throw new std::invalid_argument("filename is empty!");
         type_ = type;
@@ -30,6 +38,9 @@ void Logger::setupLogger(uint8_t type, std::string filename)
 
 void Logger::debug(std::string message) {
     write(message, LOGGING_LEVEL_DEBUG);
+}
+void Logger::info(std::string message) {
+    write(message, LOGGING_LEVEL_INFO);
 }
 void Logger::warn(std::string message) {
     write(message, LOGGING_LEVEL_WARN);
@@ -46,10 +57,13 @@ void Logger::write(const std::string message, const uint8_t level)
     if(type_ == CONSOLE_LOGGER || type_ == HYBRID_LOGGER) {
         std::cout << formatMessage(message, level) << std::endl;
     }
-    if(type_ == FILE_LOGGER || type_ == HYBRID_LOGGER) {
-        std::fstream a;
-        a.open(filename_);
-        a << formatMessage(message, level, true) << '\n';
+    if((type_ == FILE_LOGGER) || (type_ == HYBRID_LOGGER)) {
+        std::ofstream a(filename_, std::ios::app);
+        if(!a.is_open() || !a.good()) {
+			std::cerr << "Could not open file, logger will not work." << std::endl;
+			return;
+        }
+        a << formatMessage(message, level, true) << std::endl;
         a.close();
     }
 }
@@ -89,11 +103,14 @@ std::string Logger::getLevelStr(const uint8_t level)
 		case LOGGING_LEVEL_DEBUG: {
 			return std::string("DEBUG");
 		}
+		case LOGGING_LEVEL_INFO: {
+			return std::string("INFO");
+		}
 		case LOGGING_LEVEL_WARN: {
 			return std::string("WARN");
 		}
 		case LOGGING_LEVEL_ERROR: {
-			return std::string("ERRO");
+			return std::string("ERROR");
 		}
 		case LOGGING_LEVEL_FATAL: {
 			return std::string("FATAL");
