@@ -1,5 +1,4 @@
 #include "basics/bio.h"
-
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <stdio.h>
@@ -8,13 +7,16 @@
 #include <cstring>
 #include <stdexcept>
 
-/** \brief \copybrief hex_to_bytes
- *  \details Secur method to convert a hex-string to binary, checks if characters are valid.
- *			 Throws exception if not.
- *			 Used a modified version of http://www.codeproject.com/Articles/99547/Hex-strings-to-raw-data-and-back
- * 			 Codeprojects version is licensed under the BSD licencse.
- */
- void cdpp::bio::hex_to_bytes(const std::string& str, unsigned char* data)
+using namespace cdpp;
+
+ /********************************************//**
+ * \brief \copybrief hex_to_bytes
+ * \details Secur method to convert a hex-string to binary, checks if characters are valid.
+ *			Throws exception if not.
+ *			Used a modified version of http://www.codeproject.com/Articles/99547/Hex-strings-to-raw-data-and-back
+ * 			Codeprojects version is licensed under the BSD licencse.
+ ***********************************************/
+void bio::hex_to_bytes(const std::string& str, unsigned char* data)
 {
 	// Sanity check
 	static_assert(8 == CHAR_BIT, "CHAR_BIT must / should be 8");
@@ -83,7 +85,7 @@
 }
 
 //Calculates the length of a decoded base64 string
-int cdpp::bio::calcDecodeLength(const char* b64input)
+int bio::calcDecodeLength(const char* b64input)
 {
 	int len = strlen(b64input);
 	int padding = 0;
@@ -98,7 +100,7 @@ int cdpp::bio::calcDecodeLength(const char* b64input)
 }
 
 //Decodes a base64 encoded string
-int cdpp::bio::Base64Decode(char* b64message, char* buffer)
+int bio::Base64Decode(char* b64message, char* buffer)
 {
 	BIO *bio, *b64;
 	int decodeLen = calcDecodeLength((const char*)b64message);
@@ -117,26 +119,28 @@ int cdpp::bio::Base64Decode(char* b64message, char* buffer)
 	BIO_free_all(bio);
 	fclose(stream);
 
-	return (0); //success
+	return 0; //success
 }
 
 //Encodes a string to base64
-int cdpp::bio::Base64Encode(const char* message, char** buffer)
+std::string bio::Base64Encode(const char* message)
 {
 	BIO *bio, *b64;
 	FILE* stream;
 	int encodedSize = 4*ceil((double)strlen(message)/3);
-	*buffer = (char *)malloc(encodedSize+1);
+	char *buffer = (char *)malloc(encodedSize+1);
 
-	stream = fmemopen(*buffer, encodedSize+1, "w");
+	stream = fmemopen(buffer, encodedSize+1, "w");
 	b64 = BIO_new(BIO_f_base64());
 	bio = BIO_new_fp(stream, BIO_NOCLOSE);
 	bio = BIO_push(b64, bio);
 	BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL); //Ignore newlines - write everything in one line
 	BIO_write(bio, message, strlen(message));
-	BIO_flush(bio);
+	//"Suspress warning"
+	encodedSize = BIO_flush(bio);
 	BIO_free_all(bio);
 	fclose(stream);
-
-	return (0); //success
+	std::string ret(buffer);
+	free(buffer);
+	return ret;
 }

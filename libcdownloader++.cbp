@@ -76,17 +76,17 @@
 		<Unit filename="include/Container/RSDFParser.h" />
 		<Unit filename="include/Logger.h" />
 		<Unit filename="include/basics/aes.h" />
-		<Unit filename="include/basics/base64.h" />
+		<Unit filename="include/basics/bio.h" />
 		<Unit filename="src/Container/RSDFParser.cpp" />
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/basics/aes.cpp" />
-		<Unit filename="src/basics/base64.cpp" />
+		<Unit filename="src/basics/bio.cpp" />
 		<Extensions>
 			<DoxyBlocks>
 				<comment_style block="4" line="0" />
 				<doxyfile_project />
 				<doxyfile_build />
-				<doxyfile_warnings />
+				<doxyfile_warnings warn_if_undocumented="1" />
 				<doxyfile_output />
 				<doxyfile_dot />
 				<general />

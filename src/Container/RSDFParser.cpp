@@ -39,6 +39,7 @@ std::vector<std::string> RSDFParser::parseFile(std::string filename)
 std::vector<std::string> RSDFParser::parse(std::string content)
 {
 	static Logger logger = Logger::getLogger();
+	AES aes(CDPP_AES_CFB_192, iv_);
 	content.erase(std::remove_if(content.begin(), content.end(), &::isspace), content.end());
 	int length = content.length() / 2;
 	char buffer[length + 1];
@@ -55,10 +56,11 @@ std::vector<std::string> RSDFParser::parse(std::string content)
 		char result[tmp_len + 1];
 		memcpy(result, buffer+buffer_pos, tmp_len);
 		result[tmp_len] = '\0';
-		char decoded[bio::calcDecodeLength(result)];
-		bio::Base64Decode(result, decoded);
-		links.push_back(aes_decrypt((unsigned char*)decoded, tmp_len, key_, iv_, CDPP_AES_CFB_192));
 		buffer_pos += tmp_len + 1;
+		tmp_len = bio::calcDecodeLength(result);
+		char decoded[tmp_len];
+		bio::Base64Decode(result, decoded);
+		links.push_back(aes.decrypt((unsigned char*)decoded, tmp_len, key_));
 		length -= buffer_pos;
 	}
 	return links;

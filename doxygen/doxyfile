@@ -87,7 +87,7 @@ LAYOUT_FILE            =
 #---------------------------------------------------------------------------
 QUIET                  = NO
 WARNINGS               = YES
-WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = YES
 WARN_FORMAT            = "$file:$line: $text"
@@ -97,12 +97,12 @@ WARN_LOGFILE            = "./doxygen.log"
 #---------------------------------------------------------------------------
 INPUT                  = \
 	"../src/basics/aes.cpp" \
-	"../include/basics/base64.h" \
+	"../include/basics/bio.h" \
 	"../include/basics/aes.h" \
 	"../src/Container/RSDFParser.cpp" \
-	"../src/basics/base64.cpp" \
 	"../include/Logger.h" \
 	"../src/Logger.cpp" \
+	"../src/basics/bio.cpp" \
 	"../include/Container/RSDFParser.h" 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =

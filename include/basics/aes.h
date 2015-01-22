@@ -1,34 +1,68 @@
 #ifndef AES_H_INCLUDED
 #define AES_H_INCLUDED
-
+/********************************************//**
+* \file aes.h
+* \brief Wrapper for openssl AES functions
+***********************************************/
 #include <string>
+#include <openssl/evp.h>
+#include <openssl/conf.h>
+#include "Logger.h"
 
-/********************************************//**
- * \file aes.h
- * \brief Wrapper for openssl AES functions
- ***********************************************/
+namespace cdpp {
+	/********************************************//**
+	* \def CDPP_AES_ECB_192
+	* Define used to indicate that decrypt should use AES in ECB mode with 192bit key.
+	***********************************************/
+	#define CDPP_AES_ECB_192 0x01
+	/********************************************//**
+	* \def CDPP_AES_CFB_192
+	* Define used to indicate that decrypt should use AES in CFB mode with 192bit key.
+	***********************************************/
+	#define CDPP_AES_CFB_192 0x02
+	/********************************************//**
+	* \def CDPP_LAST_CHIPHER
+	* Define used to indicate that decrypt should use the last chipher that was used.
+	***********************************************/
+	#define CDPP_LAST_CHIPHER 0xFF
 
-/********************************************//**
- * \def CDPP_AES_ECB_192
- * Define used to indicate that decrypt should use AES in ECB mode with 192bit key.
- ***********************************************/
-#define CDPP_AES_ECB_192 1
-/********************************************//**
- * \def CDPP_AES_CFB_192
- * Define used to indicate that decrypt should use AES in CFB mode with 192bit key.
- ***********************************************/
-#define CDPP_AES_CFB_192 2
+	/********************************************//**
+	* \class AES
+	* \brief Wrapper for openssl AES functions
+	***********************************************/
+	class AES
+	{
+		public:
+            /********************************************//**
+			* \brief Standard constructor
+            ***********************************************/
+			AES();
+			/********************************************//**
+			* \brief Constructor: Sets chipher type and initialization vector
+			* \param chipherType Chipher to use
+			* \param iv Initialization vector
+			***********************************************/
+			AES(const uint8_t chipherType, const unsigned char* iv = nullptr);
+			virtual ~AES();
+			/********************************************//**
+			* \brief Decrypts an input string with given key and (if needed) iv by using AES
+			* \param encrypted Encrypted data as c-string (char*)
+			* \param length Length of encrypted data
+			* \param key AES Key
+			* \param iv Initalization Vector
+			* \param chipherType Type of AES (e.g. cfb or ecb)
+			* \return Decrypted data
+			***********************************************/
+			std::string decrypt(unsigned char* encrypted, int length, const unsigned char* key,
+								const unsigned char* iv = NULL, const uint8_t chipherType = CDPP_LAST_CHIPHER);
+		private:
+			bool wasInit_;
+			unsigned char iv_[16];
+			Logger logger_ = Logger::getLogger();
+			uint8_t lastChipher_ = CDPP_AES_CFB_192;
 
-/********************************************//**
- * \brief Decrypts an input string with given key and (if needed) iv by using AES
- * \param encrypted Encrypted data as c-string (char*)
- * \param length Length of encrypted data
- * \param key AES Key
- * \param iv Initalization Vector
- * \param type Type of AES (e.g. cfb or ecb)
- * \return Decrypted data
- ***********************************************/
-std::string aes_decrypt(unsigned char* encrypted, int length, const unsigned char* key,
-				const unsigned char* iv, const uint8_t type);
+			const EVP_CIPHER* getChipher(const uint8_t chipherType = CDPP_LAST_CHIPHER);
+	};
 
+}
 #endif // AES_H_INCLUDED
