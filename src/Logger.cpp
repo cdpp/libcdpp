@@ -29,49 +29,77 @@ void Logger::setupLogger(uint8_t type, std::string filename)
 }
 
 void Logger::debug(std::string message) {
-    write(formatMessage(message, std::string("DEBUG"), std::string(LOGGING_COLOR_DEBUG)));
+    write(message, LOGGING_LEVEL_DEBUG);
 }
 void Logger::warn(std::string message) {
-    write(formatMessage(message, std::string("WARN"), std::string(LOGGING_COLOR_WARN)));
+    write(message, LOGGING_LEVEL_WARN);
 }
 void Logger::error(std::string message) {
-    write(formatMessage(message, std::string("ERROR"), std::string(LOGGING_COLOR_ERROR)));
+    write(message, LOGGING_LEVEL_ERROR);
 }
 void Logger::fatal(std::string message) {
-    write(formatMessage(message, std::string("FATAL"), std::string(LOGGING_COLOR_FATAL)));
+    write(message, LOGGING_LEVEL_FATAL);
 }
 
-void Logger::write(std::string message)
+void Logger::write(const std::string message, const uint8_t level)
 {
     if(type_ == CONSOLE_LOGGER || type_ == HYBRID_LOGGER) {
-        std::cout << message << std::endl;
+        std::cout << formatMessage(message, level) << std::endl;
     }
     if(type_ == FILE_LOGGER || type_ == HYBRID_LOGGER) {
         std::fstream a;
         a.open(filename_);
-        a << message << '\n';
+        a << formatMessage(message, level, true) << '\n';
         a.close();
     }
 }
 
-std::string Logger::formatMessage(std::string message, std::string level, std::string color)
+std::string Logger::formatMessage(const std::string message, const uint8_t level, bool forFile)
 {
     time_t t = time(0);   // get time now
-    struct tm * now = localtime(&t);
-    std::regex reg_date("(DATE)");
-    std::regex reg_message("(MESSAGE)");
-    std::regex reg_level("LEVEL");
-    std::regex reg_color_begin("(\\[COLOR\\])");
-    std::regex reg_color_end("(\\[/COLOR\\])");
-    char time[10];
-    strftime(time, 10, "%T", now);
-    char date[12];
-    strftime(date, 12, "%F", now);
-    std::string output(std::regex_replace(pattern_, std::regex("TIME"), std::string(time)));
-    output = std::regex_replace(output, reg_level, level);
+    char date[24];
+    strftime(date, 24, "%F %T", localtime(&t));
+    std::string defaultColor, color;
+	if (forFile) {
+		//No color in file
+		color = "";
+		defaultColor = "";
+    } else {
+    	color = color_[level];
+		defaultColor = color_[LOGGING_LEVEL_DEFAULT];
+    }
+
+    std::regex reg_date("%date");
+    std::regex reg_message("%msg");
+    std::regex reg_color_begin("%highlight\\{");
+    std::regex reg_color_end("(\\})");
+    std::regex reg_level("%level");
+
+    std::string output(std::regex_replace(pattern_, reg_level, getLevelStr(level)));
     output = std::regex_replace(output, reg_color_begin, color);
-    output = std::regex_replace(output, reg_color_end, std::string(LOGGING_COLOR_DEFAULT));
-    output = std::regex_replace(output, reg_date, std::string(date));
+	output = std::regex_replace(output, reg_color_end, defaultColor, std::regex_constants::format_first_only);
+	output = std::regex_replace(output, reg_date, std::string(date));
     output = std::regex_replace(output, reg_message, message);
     return output;
+}
+
+std::string Logger::getLevelStr(const uint8_t level)
+{
+	switch (level) {
+		case LOGGING_LEVEL_DEBUG: {
+			return std::string("DEBUG");
+		}
+		case LOGGING_LEVEL_WARN: {
+			return std::string("WARN");
+		}
+		case LOGGING_LEVEL_ERROR: {
+			return std::string("ERRO");
+		}
+		case LOGGING_LEVEL_FATAL: {
+			return std::string("FATAL");
+		}
+		default: {
+			return std::string("DEFAULT");
+		}
+	}
 }
