@@ -19,7 +19,7 @@ RSDFParser::~RSDFParser()
     //dtor
 }
 
-std::vector<std::string> RSDFParser::parseFile(std::string filename)
+std::vector<std::string> RSDFParser::parseFile(const std::string &filename)
 {
 	static Logger logger = Logger::getLogger();
 	std::string content = "";
@@ -54,7 +54,7 @@ std::vector<std::string> RSDFParser::parse(std::string content)
 	content.erase(std::remove_if(content.begin(), content.end(), &::isspace), content.end());
 	//It is a hex string so 2 chars in string == 1 Byte
 	int length = content.length() / 2;
-	char buffer[length + 1];
+	char* buffer = new char[length + 1];
 	//Convert content of file to binary (hex2bin)
 	bio::hex_to_bytes(content, (unsigned char*)buffer);
 	std::vector<std::string> links;
@@ -70,22 +70,25 @@ std::vector<std::string> RSDFParser::parse(std::string content)
 			continue;
 		}
 		//Get string from start / last new line to found new line
-		char result[tmp_len + 1];
+		char* result = new char[tmp_len + 1];
 		memcpy(result, buffer+buffer_pos, tmp_len);
 		result[tmp_len] = '\0';
 		buffer_pos += tmp_len + 1;
 		//Decode line of Base64 to binary
 		tmp_len = bio::calcDecodeLength(result);
-		char decoded[tmp_len];
+		char* decoded = new char[tmp_len];
 		bio::Base64Decode(result, decoded);
 		//Decrypt line with AES CFB
 		links.push_back(aes.decrypt((unsigned char*)decoded, tmp_len, key_));
 		length -= buffer_pos;
+		delete[] decoded;
+		delete[] result;
 	}
+	delete[] buffer;
 	return links;
 }
 
-int RSDFParser::searchPattern(const char* str, const int length, const std::vector<char> patterns)
+int RSDFParser::searchPattern(const char* str, const int length, const std::vector<char> &patterns)
 {
 	int i = 0;
 	for(; i < length; i++) {

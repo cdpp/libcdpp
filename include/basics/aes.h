@@ -61,6 +61,7 @@ namespace cdpp {
 			Logger logger_ = Logger::getLogger();
 			uint8_t lastChipher_ = CDPP_AES_CFB_192;
 
+			inline void cleanup(EVP_CIPHER_CTX* ctx);
 			const EVP_CIPHER* getChipher(const uint8_t chipherType = CDPP_LAST_CHIPHER);
 	};
 

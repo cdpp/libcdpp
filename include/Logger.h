@@ -6,9 +6,13 @@
  ***********************************************/
 
 #include <string>
+#include <vector>
+#include <utility>
 #include <stdint.h>
 
 namespace cdpp {
+	typedef std::vector<std::pair<std::string,std::string>> err_trace;
+
 	/********************************************//**
 	* \def CONSOLE_LOGGER
 	* Defines to log to the console only
@@ -56,16 +60,17 @@ namespace cdpp {
              * \param type Type of logger
              * \param filename If Hybrid- or filelogger this is the file where to log
              ***********************************************/
-            void setupLogger(uint8_t type, std::string filename = "");
-            void debug(const std::string message);
-            void info(const std::string message);
-            void warn(const std::string message);
-            void error(const std::string message);
-            void fatal(const std::string message);
+            void setupLogger(uint8_t type, const std::string& filename = "");
+            void debug(const std::string& message);
+            void info(const std::string& message);
+            void warn(const std::string& message);
+            void error(const std::string& message, const std::string& what = "");
+            void error(const std::string& message, const err_trace& what);
+            void fatal(const std::string& message);
         private:
             Logger(){}; //!< Singleton
             inline std::string getLevelStr(const uint8_t level);
-            void write(const std::string message, const uint8_t level);
+            void write(const uint8_t level, const std::string& message, const std::vector<std::string>& what = std::vector<std::string>(0));
             /********************************************//**
 			 * \brief Formats message to fit the given pattern
              * \param message Message to log
@@ -75,11 +80,11 @@ namespace cdpp {
              * \return Formated message
              *
              ***********************************************/
-            std::string formatMessage(const std::string message, uint8_t level, bool forFile = false);
+            std::string formatMessage(uint8_t level, const std::string& message, const std::vector<std::string>& what, bool forFile = false);
 
             uint8_t type_ = CONSOLE_LOGGER;
             std::string filename_;
-            const std::string pattern_ = "%highlight{%level - %date} - %msg";
+            const std::string pattern_ = "%highlight{%level - %date} - %msg\n%ex";
             const std::string color_[6] = {	LOGGING_COLOR_DEFAULT,	LOGGING_COLOR_DEBUG,
 											LOGGING_COLOR_INFO,		LOGGING_COLOR_WARN,
 											LOGGING_COLOR_ERROR,	LOGGING_COLOR_FATAL};

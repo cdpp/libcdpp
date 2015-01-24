@@ -41,7 +41,7 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
 						const unsigned char* iv, const uint8_t chipherType)
 {
     int tmp_len, o_len = 0;
-    unsigned char decrypted[length+16];
+    unsigned char* decrypted = new unsigned char[length+16];
     const EVP_CIPHER* cipher = getChipher(chipherType);
     EVP_CIPHER_CTX* ctx;
 
@@ -57,6 +57,7 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
 	/* Initialise the decryption operation. */
 	if(1 != EVP_DecryptInit_ex(ctx, cipher, NULL, key, iv_)) {
 		logger_.error("Could not setup decryption, maybe key or iv are not valid.");
+		cleanup(ctx);
 		return "";
 	}
 	EVP_CIPHER_CTX_set_padding(ctx, false);
@@ -67,6 +68,7 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
      */
     if(1 != EVP_DecryptUpdate(ctx, decrypted, &tmp_len, encrypted, length)) {
         logger_.error("Failed to decrypt message.");
+        cleanup(ctx);
         return "";
     }
     /* Finalise the decryption. Further plaintext bytes may be written at
@@ -75,10 +77,10 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
 	o_len += tmp_len;
     if (1 != EVP_DecryptFinal_ex(ctx, decrypted + tmp_len, &tmp_len)) {
         logger_.error("Failed to finalize the decryption.");
+        cleanup(ctx);
         return "";
     }
-	//Clean context
-	EVP_CIPHER_CTX_free(ctx);
+	cleanup(ctx);
 
     o_len += tmp_len;
     decrypted[o_len] = '\0';
@@ -93,7 +95,9 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
 			memcpy(iv_ + offset, encrypted, 16 - offset);
 		}
 	}
-    return std::string((char*)decrypted);
+    std::string ret((char*)decrypted);
+    delete[] decrypted;
+    return ret;
 }
 
 const EVP_CIPHER* AES::getChipher(const uint8_t chipherType)
@@ -112,4 +116,10 @@ const EVP_CIPHER* AES::getChipher(const uint8_t chipherType)
 			return EVP_aes_192_ecb();
 		}
 	}
+}
+
+void AES::cleanup(EVP_CIPHER_CTX* ctx)
+{
+	//Clean context
+	EVP_CIPHER_CTX_free(ctx);
 }

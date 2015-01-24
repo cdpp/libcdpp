@@ -3,6 +3,7 @@
 /********************************************//**
  * \file RSDFParser.h
 ***********************************************/
+#include "Container.h"
 #include <string>
 #include <vector>
 
@@ -10,8 +11,9 @@ namespace cdpp {
     /********************************************//**
      * \class RSDFParser
 	 * \brief Class for parsing RSDF link container
+	 * \implements Container
      ***********************************************/
-    class RSDFParser
+    class RSDFParser : public Container
     {
         public:
         	//! Standard constructor
@@ -29,7 +31,7 @@ namespace cdpp {
              * \param filename Name and path of file, which should be parsed
              * \return List of decrypted URLs
              ***********************************************/
-            std::vector<std::string> parseFile(std::string filename);
+            std::vector<std::string> parseFile(const std::string &filename);
         protected:
         private:
             const unsigned char key_[24] = {0x8C, 0x35, 0x19, 0x2D, 0x96, 0x4D,
@@ -42,7 +44,7 @@ namespace cdpp {
 			//! Characters to splitt lines, 0xDA because of some fails (linkcrypt.ws)
         	const std::vector<char> std_patterns_ = {'\n', '\r', '\xda'};
         	//! Returns position of the occurrence of the pattern
-			int searchPattern(const char* str, const int length, const std::vector<char> patterns);
+			int searchPattern(const char* str, const int length, const std::vector<char> &patterns);
     };
 }
 #endif // RSDFPARSER_H
