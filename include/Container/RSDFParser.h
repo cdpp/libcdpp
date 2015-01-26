@@ -4,6 +4,7 @@
  * \file RSDFParser.h
 ***********************************************/
 #include "Container.h"
+#include "Package.h"
 #include <string>
 #include <vector>
 
@@ -25,13 +26,13 @@ namespace cdpp {
              * \param content Content of file
              * \return List of decrypted URLs
              ***********************************************/
-            std::vector<std::string> parse(std::string content);
+            std::vector<cdpp::Package> parse(const std::string& content);
             /********************************************//**
 			 * \brief Parse given rsdf file
              * \param filename Name and path of file, which should be parsed
              * \return List of decrypted URLs
              ***********************************************/
-            std::vector<std::string> parseFile(const std::string &filename);
+            std::vector<cdpp::Package> parseFile(const std::string &filename);
         protected:
         private:
             const unsigned char key_[24] = {0x8C, 0x35, 0x19, 0x2D, 0x96, 0x4D,

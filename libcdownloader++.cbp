@@ -15,7 +15,7 @@
 		</MakeCommands>
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/cdownloader++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/cdpp" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin/Debug" />
 				<Option object_output="obj/Debug/" />
 				<Option type="3" />
@@ -28,11 +28,10 @@
 				<Option projectLibDirsRelation="0" />
 				<Compiler>
 					<Add option="-pedantic" />
-					<Add option="-std=c++11" />
-					<Add option="-Wextra" />
-					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add directory="include" />
+					<Add directory="thirdparty" />
+					<Add directory="include/Container" />
 				</Compiler>
 				<MakeCommands>
 					<Build command="" />
@@ -44,7 +43,7 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/cdownloader++" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/cdpp" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Release/" />
 				<Option type="3" />
 				<Option compiler="gnu_gcc_compiler_49" />
@@ -52,11 +51,9 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add option="-std=c++11" />
-					<Add option="-Wextra" />
-					<Add option="-Wall" />
-					<Add option="-fPIC" />
+					<Add option="-DBUILD_RELEASE" />
 					<Add directory="include" />
+					<Add directory="include/Container" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -69,18 +66,32 @@
 			<Add option="-Wall" />
 			<Add option="-fPIC" />
 			<Add directory="include" />
+			<Add directory="thirdparty" />
 		</Compiler>
 		<Linker>
 			<Add option="-lssl" />
+			<Add option="-lcurl" />
+			<Add option="-lpugixml" />
+			<Add library="thirdparty/curlcpp/build/libcurlcpp.a" />
 		</Linker>
+		<Unit filename="include/Container/CCFParser.h" />
+		<Unit filename="include/Container/Container.h" />
+		<Unit filename="include/Container/DLCParser.h" />
+		<Unit filename="include/Container/DecryptionException.h" />
+		<Unit filename="include/Container/Package.h" />
 		<Unit filename="include/Container/RSDFParser.h" />
 		<Unit filename="include/Logger.h" />
 		<Unit filename="include/basics/aes.h" />
 		<Unit filename="include/basics/bio.h" />
+		<Unit filename="include/cdpp.h" />
+		<Unit filename="src/Container/CCFParser.cpp" />
+		<Unit filename="src/Container/DLCParser.cpp" />
+		<Unit filename="src/Container/Package.cpp" />
 		<Unit filename="src/Container/RSDFParser.cpp" />
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/basics/aes.cpp" />
 		<Unit filename="src/basics/bio.cpp" />
+		<Unit filename="version.h" />
 		<Extensions>
 			<DoxyBlocks>
 				<comment_style block="4" line="0" />
@@ -94,6 +105,12 @@
 			<envvars />
 			<code_completion />
 			<debugger />
+			<AutoVersioning>
+				<Scheme minor_max="20" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" use_define="0" update_manifest="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />
+			</AutoVersioning>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

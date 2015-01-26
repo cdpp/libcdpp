@@ -21,13 +21,13 @@ namespace cdpp {
              * \param content Content of container file
              * \return Decrypted / Decoded content
              ***********************************************/
-			std::vector<std::string> parse(const std::string& content);
+			std::vector<cdpp::Package> parse(const std::string& content);
 			/********************************************//**
 			 * \brief Function to parse given container file
              * \param filename File name of container-file
              * \return Decrypted / Decoded content of file
              ***********************************************/
-            std::vector<std::string> parseFile(const std::string& filename);
+            std::vector<cdpp::Package> parseFile(const std::string& filename);
 		private:
 			std::vector<std::string> decryptNative(std::string content);
 			std::vector<std::string> decryptByJdo(std::string content);

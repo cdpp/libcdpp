@@ -16,7 +16,7 @@ using namespace cdpp;
  *			Used a modified version of http://www.codeproject.com/Articles/99547/Hex-strings-to-raw-data-and-back
  * 			Codeprojects version is licensed under the BSD licencse.
  ***********************************************/
-void bio::hex_to_bytes(const std::string& str, unsigned char* data)
+void bio::hex2bytes(const std::string& str, unsigned char* data)
 {
 	// Sanity check
 	static_assert(8 == CHAR_BIT, "CHAR_BIT must / should be 8");
@@ -100,26 +100,39 @@ int bio::calcDecodeLength(const char* b64input)
 }
 
 //Decodes a base64 encoded string
-int bio::Base64Decode(char* b64message, char* buffer)
+void bio::Base64Decode(const char* b64message, char* buffer)
 {
-	BIO *bio, *b64;
+	BIO *b64  = BIO_new(BIO_f_base64());
 	int decodeLen = calcDecodeLength((const char*)b64message);
-	int len = 0;
-	FILE* stream = fmemopen(b64message, strlen(b64message), "r");
 
-	b64 = BIO_new(BIO_f_base64());
-	bio = BIO_new_fp(stream, BIO_NOCLOSE);
-	bio = BIO_push(b64, bio);
-	BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL); //Do not use newlines to flush buffer
-	len = BIO_read(bio, buffer, strlen(b64message));
+	BIO *bmem = BIO_new_mem_buf((void*)b64message, strlen(b64message));
+	bmem = BIO_push(b64, bmem);
+	BIO_set_flags(bmem, BIO_FLAGS_BASE64_NO_NL);
+	int len = BIO_read(bmem, buffer, decodeLen);
+	BIO_free_all(bmem);
+	buffer[decodeLen] = '\0';
 	if(len != decodeLen)
-		return -1;
-	buffer[len] = '\0';
+		throw std::length_error("Base64Decode: Length != Calculated length");
+}
 
-	BIO_free_all(bio);
-	fclose(stream);
+//Decodes a base64 encoded string
+std::string bio::Base64Decode(const std::string& b64string)
+{
+	BIO* b64  = BIO_new(BIO_f_base64());
+	int decodeLen = calcDecodeLength(b64string.c_str());
+	char* buffer = new char[decodeLen + 1];
 
-	return 0; //success
+	BIO *bmem = BIO_new_mem_buf((void*)b64string.c_str(), b64string.size());
+	bmem = BIO_push(b64, bmem);
+	BIO_set_flags(bmem, BIO_FLAGS_BASE64_NO_NL);
+	int len = BIO_read(bmem, buffer, decodeLen);
+	BIO_free_all(bmem);
+	buffer[decodeLen] = '\0';
+	if(len != decodeLen)
+		throw std::length_error("Base64Decode: Length != Calculated length");
+	std::string ret(buffer);
+	delete[] buffer;
+	return ret;
 }
 
 //Encodes a string to base64
@@ -128,7 +141,7 @@ std::string bio::Base64Encode(const char* message)
 	BIO *bio, *b64;
 	FILE* stream;
 	int encodedSize = 4*ceil((double)strlen(message)/3);
-	char *buffer = (char *)malloc(encodedSize+1);
+	char *buffer = new char[encodedSize + 1];
 
 	stream = fmemopen(buffer, encodedSize+1, "w");
 	b64 = BIO_new(BIO_f_base64());
@@ -141,6 +154,6 @@ std::string bio::Base64Encode(const char* message)
 	BIO_free_all(bio);
 	fclose(stream);
 	std::string ret(buffer);
-	free(buffer);
+	delete[] buffer;
 	return ret;
 }

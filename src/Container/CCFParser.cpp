@@ -12,12 +12,12 @@ CCFParser::~CCFParser()
 	//dtor
 }
 
-std::vector<std::string> CCFParser::parse(const std::string& content)
+std::vector<cdpp::Package> CCFParser::parse(const std::string& content)
 {
-	return std::vector<std::string>();
+	return std::vector<cdpp::Package>();
 }
 
-std::vector<std::string> CCFParser::parseFile(const std::string& filename)
+std::vector<cdpp::Package> CCFParser::parseFile(const std::string& filename)
 {
 	return parse("");
 }

@@ -4,15 +4,21 @@
  * \file Logger.h
  * \brief Simple logger class
  ***********************************************/
-
-#include <string>
-#include <vector>
+#include "cdpp.h"
+#include <type_traits>
+#include <stdexcept>
 #include <utility>
 #include <stdint.h>
 
-namespace cdpp {
-	typedef std::vector<std::pair<std::string,std::string>> err_trace;
+#ifndef LOGGING_LEVEL
+  #ifdef NDEBUG
+	#define LOGGING_LEVEL LOGGING_LEVEL_WARN
+  #else
+	#define LOGGING_LEVEL LOGGING_LEVEL_DEBUG
+  #endif // NDEBUG
+#endif // LOGGING_LEVEL
 
+namespace cdpp {
 	/********************************************//**
 	* \def CONSOLE_LOGGER
 	* Defines to log to the console only
@@ -58,33 +64,39 @@ namespace cdpp {
             /********************************************//**
 			 * \brief Setup type of logger and if needed filename where to log
              * \param type Type of logger
+             * \param level Logging level
              * \param filename If Hybrid- or filelogger this is the file where to log
              ***********************************************/
-            void setupLogger(uint8_t type, const std::string& filename = "");
-            void debug(const std::string& message);
+            void setupLogger(uint8_t type, const uint8_t level = LOGGING_LEVEL_WARN, const std::string& filename = "");
+            void setLoggingLevel(const uint8_t level);
+            void debug(const std::string& message, const std::string& what = "");
+            void debug(const std::string& message, std::exception& throwable);
             void info(const std::string& message);
             void warn(const std::string& message);
             void error(const std::string& message, const std::string& what = "");
-            void error(const std::string& message, const err_trace& what);
+            void error(const std::string& message, std::exception& throwable);
             void fatal(const std::string& message);
         private:
             Logger(){}; //!< Singleton
             inline std::string getLevelStr(const uint8_t level);
-            void write(const uint8_t level, const std::string& message, const std::vector<std::string>& what = std::vector<std::string>(0));
+            void write(const uint8_t level, const std::string& message, const std::string& what = "");
+            template<typename Base, typename T>
+			inline bool instanceof(const T*) {
+				return std::is_base_of<Base, T>::value;
+			}
             /********************************************//**
 			 * \brief Formats message to fit the given pattern
              * \param message Message to log
              * \param level Loglevel
-             * \param color Color to for logging
              * \param forFile Defines if this format is for file logging (no color)
              * \return Formated message
-             *
              ***********************************************/
-            std::string formatMessage(uint8_t level, const std::string& message, const std::vector<std::string>& what, bool forFile = false);
+            std::string formatMessage(uint8_t level, const std::string& message, const std::string& what, bool forFile = false);
 
             uint8_t type_ = CONSOLE_LOGGER;
+            uint8_t level_ = LOGGING_LEVEL;
             std::string filename_;
-            const std::string pattern_ = "%highlight{%level - %date} - %msg\n%ex";
+            const std::string pattern_ = "%highlight{%level - %date} - %msg%ex{\n\t}";
             const std::string color_[6] = {	LOGGING_COLOR_DEFAULT,	LOGGING_COLOR_DEBUG,
 											LOGGING_COLOR_INFO,		LOGGING_COLOR_WARN,
 											LOGGING_COLOR_ERROR,	LOGGING_COLOR_FATAL};

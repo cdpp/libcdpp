@@ -96,14 +96,24 @@ WARN_LOGFILE            = "./doxygen.log"
 # configuration options related to the input files
 #---------------------------------------------------------------------------
 INPUT                  = \
+	"../include/cdpp.h" \
+	"../include/Container/DLCParser.h" \
+	"../include/Container/Package.h" \
 	"../src/basics/aes.cpp" \
+	"../src/Container/RSDFParser.cpp" \
+	"../src/Logger.cpp" \
+	"../include/Container/CCFParser.h" \
+	"../include/Container/Container.h" \
+	"../src/Container/DecryptionException.cpp" \
+	"../src/Container/DLCParser.cpp" \
+	"../src/Container/Package.cpp" \
+	"../include/Container/RSDFParser.h" \
+	"../src/basics/bio.cpp" \
+	"../include/Logger.h" \
 	"../include/basics/bio.h" \
 	"../include/basics/aes.h" \
-	"../src/Container/RSDFParser.cpp" \
-	"../include/Logger.h" \
-	"../src/Logger.cpp" \
-	"../src/basics/bio.cpp" \
-	"../include/Container/RSDFParser.h" 
+	"../include/Container/DecryptionException.h" \
+	"../src/Container/CCFParser.cpp" 
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = NO

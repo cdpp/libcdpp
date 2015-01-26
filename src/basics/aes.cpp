@@ -2,6 +2,8 @@
 * This is public domain code.
 */
 #include "basics/aes.h"
+#include "basics/bio.h"
+
 #include <stdexcept>
 #include <cstring>
 
@@ -33,8 +35,45 @@ AES::~AES()
  * \details This function uses the EVP apis of the openssl library.
  *			Note that key must(!) fit the selected chipher (e.g. aes ecb 192 the key must be 24Byte == 192bit).
  *			You can select the type of chipher by setting type.
- * \sa CDPP_AES_ECB_192
- * \sa CDPP_AES_CFB_192.
+ * \sa CDPP_AES_ECB_192 CDPP_AES_ECB_128
+ * \sa CDPP_AES_CBC_128 CDPP_AES_CFB_192.
+ ***********************************************/
+
+std::string AES::decrypt(const std::string& b64String, const unsigned char* key,
+						const unsigned char* iv, const uint8_t chipherType)
+{
+	int tmp_len = bio::calcDecodeLength(b64String.c_str());
+	char* decoded = new char[tmp_len + 1];
+	try {
+		bio::Base64Decode(b64String.c_str(), decoded);
+	} catch (std::length_error& le) {
+		logger_.debug("Length error in decrypt AES -> from B64");
+		throw std::length_error(le.what() + std::string("\nCalled by: AES::decrypt(str)"));
+	}
+	std::string ret;
+	try {
+		ret = decrypt((unsigned char*)decoded, tmp_len, key, iv, chipherType);
+	}
+	catch (std::invalid_argument& ia) {
+		throw std::invalid_argument(ia.what() + std::string("\nCalled by: AES::decrypt(str)"));
+	}
+	catch (std::logic_error& lo) {
+		throw std::logic_error(lo.what() + std::string("\nCalled by: AES::decrypt(str)"));
+	}
+	catch (std::runtime_error& rt) {
+		throw std::runtime_error(rt.what() + std::string("\nCalled by: AES::decrypt(str)"));
+	}
+	delete[] decoded;
+	return ret;
+}
+
+/********************************************//**
+ * \brief \copybrief decrypt
+ * \details This function uses the EVP apis of the openssl library.
+ *			Note that key must(!) fit the selected chipher (e.g. aes ecb 192 the key must be 24Byte == 192bit).
+ *			You can select the type of chipher by setting type.
+ * \sa CDPP_AES_ECB_192 CDPP_AES_ECB_128
+ * \sa CDPP_AES_CBC_128 CDPP_AES_CFB_192.
  ***********************************************/
 
 std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned char* key,
@@ -46,19 +85,20 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
     EVP_CIPHER_CTX* ctx;
 
 	if (!wasInit_) {
-		memcpy(iv_, iv, 16);
+		if(iv != nullptr)
+			memcpy(iv_, iv, 16);
 		wasInit_ = true;
 	}
 
 	if (!(ctx = EVP_CIPHER_CTX_new())) {
-        logger_.error("Could not initalisize the Cipher Context.");
-        throw std::runtime_error("openssl could not be initialisized.");
+        logger_.debug("Could not initalisize the Cipher Context.");
+        throw std::runtime_error("AES::decrypt(): Openssl could not be initialisized.");
     }
 	/* Initialise the decryption operation. */
 	if(1 != EVP_DecryptInit_ex(ctx, cipher, NULL, key, iv_)) {
-		logger_.error("Could not setup decryption, maybe key or iv are not valid.");
+		logger_.debug("Could not setup decryption, maybe key or iv are not valid.");
 		cleanup(ctx);
-		return "";
+		throw std::invalid_argument("AES::decrypt(): Key or IV are not valid.");
 	}
 	EVP_CIPHER_CTX_set_padding(ctx, false);
 	wasInit_ = true;
@@ -67,18 +107,18 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
      * EVP_DecryptUpdate can be called multiple times if necessary
      */
     if(1 != EVP_DecryptUpdate(ctx, decrypted, &tmp_len, encrypted, length)) {
-        logger_.error("Failed to decrypt message.");
+        logger_.debug("Failed to decrypt message.");
         cleanup(ctx);
-        return "";
+        throw std::logic_error("AES::decrypt(): Can not decrypt message");
     }
     /* Finalise the decryption. Further plaintext bytes may be written at
      * this stage.
      */
 	o_len += tmp_len;
     if (1 != EVP_DecryptFinal_ex(ctx, decrypted + tmp_len, &tmp_len)) {
-        logger_.error("Failed to finalize the decryption.");
+        logger_.debug("Failed to finalize the decryption.");
         cleanup(ctx);
-        return "";
+        throw std::logic_error("AES::decrypt(): Can not finalize decryption.");
     }
 	cleanup(ctx);
 
@@ -108,6 +148,12 @@ const EVP_CIPHER* AES::getChipher(const uint8_t chipherType)
 	switch (lastChipher_) {
 		case CDPP_AES_ECB_192: {
 			return EVP_aes_192_ecb();
+		}
+		case CDPP_AES_ECB_128: {
+			return EVP_aes_128_ecb();
+		}
+		case CDPP_AES_CBC_128: {
+			return EVP_aes_128_cbc();
 		}
 		case CDPP_AES_CFB_192: {
 			return EVP_aes_192_cfb8();

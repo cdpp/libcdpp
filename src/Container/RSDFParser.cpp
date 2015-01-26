@@ -19,7 +19,7 @@ RSDFParser::~RSDFParser()
     //dtor
 }
 
-std::vector<std::string> RSDFParser::parseFile(const std::string &filename)
+std::vector<Package> RSDFParser::parseFile(const std::string &filename)
 {
 	static Logger logger = Logger::getLogger();
 	std::string content = "";
@@ -34,7 +34,10 @@ std::vector<std::string> RSDFParser::parseFile(const std::string &filename)
 	} else {
 		logger.error("Could not open file: " + filename);
 	}
-	return parse(content);
+	//RSDF only contains one package
+	Package pkg = parse(content)[0];
+	pkg.setName(filename);
+	return std::vector<Package>({pkg});
 }
 
 /********************************************//**
@@ -46,18 +49,19 @@ std::vector<std::string> RSDFParser::parseFile(const std::string &filename)
    \sa CDPP_AES_CFB_192
  ***********************************************/
 
-std::vector<std::string> RSDFParser::parse(std::string content)
+std::vector<Package> RSDFParser::parse(const std::string& content)
 {
 	static Logger logger = Logger::getLogger();
 	AES aes(CDPP_AES_CFB_192, iv_);
 	//Remove whitespaces
-	content.erase(std::remove_if(content.begin(), content.end(), &::isspace), content.end());
+	std::string prepared(content);
+	prepared.erase(std::remove_if(prepared.begin(), prepared.end(), &::isspace), prepared.end());
 	//It is a hex string so 2 chars in string == 1 Byte
-	int length = content.length() / 2;
+	int length = prepared.length() / 2;
 	char* buffer = new char[length + 1];
 	//Convert content of file to binary (hex2bin)
-	bio::hex_to_bytes(content, (unsigned char*)buffer);
-	std::vector<std::string> links;
+	bio::hex2bytes(prepared, (unsigned char*)buffer);
+	Package package;
 	int buffer_pos = 0;
 	//While not reached end of content search new line (1 line == 1 URL)
 	while(length > 0) {
@@ -79,13 +83,13 @@ std::vector<std::string> RSDFParser::parse(std::string content)
 		char* decoded = new char[tmp_len];
 		bio::Base64Decode(result, decoded);
 		//Decrypt line with AES CFB
-		links.push_back(aes.decrypt((unsigned char*)decoded, tmp_len, key_));
+		package.addFile(FileLink("unknown", aes.decrypt((unsigned char*)decoded, tmp_len, key_), -1));
 		length -= buffer_pos;
 		delete[] decoded;
 		delete[] result;
 	}
 	delete[] buffer;
-	return links;
+	return std::vector<Package>({package});
 }
 
 int RSDFParser::searchPattern(const char* str, const int length, const std::vector<char> &patterns)
