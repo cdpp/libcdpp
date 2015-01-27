@@ -1,0 +1,8 @@
+27 Januar 2015
+   released version 0.1.3 of libcdownloader++
+
+     Change log:
+        -Added: Full DLC Support
+        -Fixed: Some minor bugs in Logger
+        -New: Changelog
+

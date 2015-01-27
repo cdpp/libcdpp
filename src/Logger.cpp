@@ -74,13 +74,26 @@ void Logger::error(const std::string& message, const std::string& what)
 void Logger::error(const std::string& message, std::exception& throwable)
 {
 	if (level_ <= LOGGING_LEVEL_ERROR) {
-		write(LOGGING_LEVEL_ERROR, message, throwable.what());
+		try {
+			write(LOGGING_LEVEL_ERROR, message, dynamic_cast<CdppException&>(throwable).what());
+		} catch (std::bad_cast bc) {
+			write(LOGGING_LEVEL_ERROR, message, throwable.what());
+		}
 	}
 }
 
-void Logger::fatal(const std::string& message)
+void Logger::fatal(const std::string& message, const std::string& what)
 {
-    write(LOGGING_LEVEL_FATAL, message);
+	write(LOGGING_LEVEL_FATAL, message, what);
+}
+
+void Logger::fatal(const std::string& message, std::exception& throwable)
+{
+	try {
+		write(LOGGING_LEVEL_FATAL, message, dynamic_cast<CdppException&>(throwable).what());
+	} catch (std::bad_cast bc) {
+		write(LOGGING_LEVEL_FATAL, message, throwable.what());
+	}
 }
 
 void Logger::write(const uint8_t level, const std::string& message, const std::string& what)

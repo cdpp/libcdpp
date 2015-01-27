@@ -30,7 +30,7 @@ namespace cdpp {
 		* \param size Size of file
 		**********************************************/
 		explicit
-			FileLink(std::string name, std::string url, long size)
+			FileLink(std::string name = "", std::string url = "", long size = -1)
 				: name(name), url(url), size(size) {};
 	};
 	/********************************************//**

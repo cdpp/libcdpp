@@ -32,7 +32,7 @@ namespace cdpp {
 
     /********************************************//**
 	 * \class CdppIOException
-     * \brief Class for exceptions to throw on failed IO operations (base64)
+     * \brief Class for exceptions to throw on failed IO operations
      ***********************************************/
 	class CdppIOException : public CdppException
 	{
@@ -45,6 +45,24 @@ namespace cdpp {
              ***********************************************/
 			CdppIOException(const std::string& error) noexcept {
 				what_ = std::make_pair(std::string("CdppIOException"), error);
+			};
+	};
+
+	    /********************************************//**
+	 * \class CdppParseException
+     * \brief Class for exceptions to throw on failed parsing (base64)
+     ***********************************************/
+	class CdppParseException : public CdppException
+	{
+		public:
+			/** Default constructor */
+			CdppParseException() noexcept : CdppParseException(std::string()) {};
+            /********************************************//**
+			 * \brief Set Error (message) and function in constructor
+             * \param error Error which occured
+             ***********************************************/
+			CdppParseException(const std::string& error) noexcept {
+				what_ = std::make_pair(std::string("CdppParseException"), error);
 			};
 	};
 }

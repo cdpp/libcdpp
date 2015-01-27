@@ -17,7 +17,6 @@
 	//For pugixml extern XML parser
 	#include "pugixml.hpp"
 #endif
-#define RELEASE_BUILD
 
 using namespace cdpp;
 using namespace curl;
@@ -83,8 +82,11 @@ std::vector<Package> DLCParser::parse(const std::string& content)
 	try{
 		logger_.debug("Handling XML...");
 		links =  getLinksFromXML(dlcData);
-	} catch (CdppIOException io) {
-		logger_.error("Exception catched in DLCParser::getLinksFromXML():", io);
+	} catch (CdppException ce) {
+		logger_.error("Exception catched in DLCParser::getLinksFromXML():", ce);
+	}
+	catch (std::length_error le) {
+		logger_.error("Exception catched in DLCParser::getLinksFromXML():", le);
 	}
 	return links;
 }
@@ -116,7 +118,7 @@ std::string DLCParser::requestKey(const std::string& dlcKey)
         easy.add(curl_pair<CURLoption, string>(CURLOPT_URL,				apiURL));
         easy.add(curl_pair<CURLoption, string>(CURLOPT_POSTFIELDS,		apiData));
         easy.add(curl_pair<CURLoption, curl_header>(CURLOPT_HTTPHEADER,	header));
-        easy.perform();
+        easy.perform();https://bildungsportal.sachsen.de/opal/auth/RepositoryEntry/7499939856/CourseNode/90481366000342?sess=true
     } catch (curl_easy_exception exc) {
         // Print errors, if any
         std::string error;
@@ -199,19 +201,42 @@ std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 	//You can choose if you trust me -> smaller program
 	//Or if you use extern library pugiXML -> greater program but maybe safer
 	#ifdef EXTERN_XML_LIBRARY
-	using namespace pugi;
-	xml_document doc;
-	xml_parse_result result = doc.load_string(xmlData.c_str());
+	pugi::xml_document doc;
+	pugi::xml_parse_result result = doc.load_string(xmlData.c_str());
 	if (!result) {
 		logger_.debug(std::string("DLC XML-Error: ") + result.description());
 		throw CdppIOException("DLCParser::getLinksFromXML(): DLC XML-Error");
 	}
-	//do it();
+	pugi::xml_node content = doc.child("dlc").child("content");
+	if(!content) {
+		logger_.debug("Malformed");
+		throw CdppParseException("Got malformed XML file.");
+	}
+	for (pugi::xml_node pkg = content.child("package"); pkg; pkg = content.next_sibling("package")) {
+		Package package;
+		try {
+			package.setName(bio::Base64Decode(pkg.attribute("name").value()));
+			package.setPassword(bio::Base64Decode(pkg.attribute("passwords").value()));
+		} catch (std::length_error le) {
+			throw CdppParseException(le.what() + std::string("Called by: DLCParser::getLinksFromXML()"));
+		}
+		for (pugi::xml_node file = pkg.child("file"); file; file = file.next_sibling("file")) {
+            FileLink m_file;
+            try {
+				m_file.name = bio::Base64Decode(file.child_value("filename"));
+				m_file.url = bio::Base64Decode(file.child_value("url"));
+				if(file.child("size"))
+					m_file.size = std::stoi(bio::Base64Decode(file.child_value("size")));
+            } catch (std::length_error le) {
+				throw std::length_error(le.what() + std::string("Called by: DLCParser::getLinksFromXML()"));
+            }
+            package.addFile(m_file);
+		}
+		packages.push_back(package);
+	}
 	#else
 	//Own implementation of XML of DLC parsing
-	for(foo = foo) {
-		foo;
-	}
+
 	#endif // XML_LIBRARY
 	return packages;
 }

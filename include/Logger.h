@@ -68,6 +68,11 @@ namespace cdpp {
              * \param filename If Hybrid- or filelogger this is the file where to log
              ***********************************************/
             void setupLogger(uint8_t type, const uint8_t level = LOGGING_LEVEL_WARN, const std::string& filename = "");
+            /********************************************//**
+			 * \brief Setting logging level
+             * \param level Logging level
+             * \sa LOGGING_LEVEL_DEBUG LOGGING_LEVEL_INFO LOGGING_LEVEL_WARN LOGGING_LEVEL_ERROR LOGGING_LEVEL_FATAL
+             ***********************************************/
             void setLoggingLevel(const uint8_t level);
             void debug(const std::string& message, const std::string& what = "");
             void debug(const std::string& message, std::exception& throwable);
@@ -75,7 +80,8 @@ namespace cdpp {
             void warn(const std::string& message);
             void error(const std::string& message, const std::string& what = "");
             void error(const std::string& message, std::exception& throwable);
-            void fatal(const std::string& message);
+            void fatal(const std::string& message, const std::string& what = "");
+            void fatal(const std::string& message, std::exception& throwable);
         private:
             Logger(){}; //!< Singleton
             inline std::string getLevelStr(const uint8_t level);
