@@ -11,12 +11,7 @@
 #include <fstream>
 #include <regex>
 
-//TODO: Remove testing EXTERN LIBRARY
-#define EXTERN_XML_LIBRARY
-#ifdef EXTERN_XML_LIBRARY
-	//For pugixml extern XML parser
-	#include "pugixml.hpp"
-#endif
+#include "pugixml.hpp"
 
 using namespace cdpp;
 using namespace curl;
@@ -106,9 +101,6 @@ std::string DLCParser::requestKey(const std::string& dlcKey)
 			"rev: 9.581"};
 
 	std::ostringstream resultStream;
-	#ifndef RELEASE_BUILD
-	resultStream << "<rc>G3kXMxpzeEVNsKggxHT3BS45POxeJQ47Eyac6veM9YM=</rc>";
-	#else
 	curl_writer writer(resultStream);
     curl_easy easy(writer);
     curl_header header(headers);
@@ -118,7 +110,7 @@ std::string DLCParser::requestKey(const std::string& dlcKey)
         easy.add(curl_pair<CURLoption, string>(CURLOPT_URL,				apiURL));
         easy.add(curl_pair<CURLoption, string>(CURLOPT_POSTFIELDS,		apiData));
         easy.add(curl_pair<CURLoption, curl_header>(CURLOPT_HTTPHEADER,	header));
-        easy.perform();https://bildungsportal.sachsen.de/opal/auth/RepositoryEntry/7499939856/CourseNode/90481366000342?sess=true
+        easy.perform();
     } catch (curl_easy_exception exc) {
         // Print errors, if any
         std::string error;
@@ -128,7 +120,6 @@ std::string DLCParser::requestKey(const std::string& dlcKey)
         logger_.debug("requestKey(): Throws exception.", error);
         throw CdppIOException("DLCParser::requestKey(): Could not resolve key from network");
     }
-	#endif // RELEASE_BUILD
 	std::smatch sm;
 	//Response should contain the key wrapped in <rc></rc> tags
 	std::regex tags("<rc>([A-Za-z0-9\\+\\/]+={0,2})<\\/rc>");
@@ -198,9 +189,6 @@ std::string DLCParser::decrypt(const std::string& dlcContent, const std::string&
 std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 {
 	std::vector<Package> packages;
-	//You can choose if you trust me -> smaller program
-	//Or if you use extern library pugiXML -> greater program but maybe safer
-	#ifdef EXTERN_XML_LIBRARY
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_string(xmlData.c_str());
 	if (!result) {
@@ -226,7 +214,7 @@ std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 				m_file.name = bio::Base64Decode(file.child_value("filename"));
 				m_file.url = bio::Base64Decode(file.child_value("url"));
 				if(file.child("size"))
-					m_file.size = std::stoi(bio::Base64Decode(file.child_value("size")));
+					m_file.size = std::stol(bio::Base64Decode(file.child_value("size")));
             } catch (std::length_error le) {
 				throw std::length_error(le.what() + std::string("Called by: DLCParser::getLinksFromXML()"));
             }
@@ -234,9 +222,5 @@ std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 		}
 		packages.push_back(package);
 	}
-	#else
-	//Own implementation of XML of DLC parsing
-
-	#endif // XML_LIBRARY
 	return packages;
 }

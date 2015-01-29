@@ -80,8 +80,15 @@ std::vector<Package> RSDFParser::parse(const std::string& content)
 		buffer_pos += tmp_len + 1;
 		//Decode line of Base64 to binary
 		tmp_len = bio::calcDecodeLength(result);
-		char* decoded = new char[tmp_len];
-		bio::Base64Decode(result, decoded);
+		char* decoded = new char[tmp_len+1];
+		try {
+			bio::Base64Decode(result, decoded);
+		} catch (std::length_error le) {
+			logger.error("Catched exception in RSDFParser::parse():", le);
+			delete[] decoded;
+			delete[] result;
+			break;
+		}
 		//Decrypt line with AES CFB
 		package.addFile(FileLink("unknown", aes.decrypt((unsigned char*)decoded, tmp_len, key_), -1));
 		length -= buffer_pos;
