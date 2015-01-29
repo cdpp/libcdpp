@@ -11,16 +11,14 @@
 #include <fstream>
 #include <regex>
 
-<<<<<<< HEAD
 #include "pugixml.hpp"
-=======
 //TODO: Remove testing EXTERN LIBRARY
 #define EXTERN_XML_LIBRARY
 #ifdef EXTERN_XML_LIBRARY
 	//For pugixml extern XML parser
 	#include "pugixml.hpp"
 #endif
->>>>>>> [DLC] Fully implemented -> released version 0.1.3a
+#include "pugixml.hpp"
 
 using namespace cdpp;
 using namespace curl;
@@ -198,12 +196,9 @@ std::string DLCParser::decrypt(const std::string& dlcContent, const std::string&
 std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 {
 	std::vector<Package> packages;
-<<<<<<< HEAD
-=======
 	//You can choose if you trust me -> smaller program
 	//Or if you use extern library pugiXML -> greater program but maybe safer
 	#ifdef EXTERN_XML_LIBRARY
->>>>>>> [DLC] Fully implemented -> released version 0.1.3a
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_string(xmlData.c_str());
 	if (!result) {
@@ -229,11 +224,7 @@ std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 				m_file.name = bio::Base64Decode(file.child_value("filename"));
 				m_file.url = bio::Base64Decode(file.child_value("url"));
 				if(file.child("size"))
-<<<<<<< HEAD
 					m_file.size = std::stol(bio::Base64Decode(file.child_value("size")));
-=======
-					m_file.size = std::stoi(bio::Base64Decode(file.child_value("size")));
->>>>>>> [DLC] Fully implemented -> released version 0.1.3a
             } catch (std::length_error le) {
 				throw std::length_error(le.what() + std::string("Called by: DLCParser::getLinksFromXML()"));
             }
@@ -241,12 +232,9 @@ std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 		}
 		packages.push_back(package);
 	}
-<<<<<<< HEAD
-=======
 	#else
 	//Own implementation of XML of DLC parsing
 
 	#endif // XML_LIBRARY
->>>>>>> [DLC] Fully implemented -> released version 0.1.3a
 	return packages;
 }
