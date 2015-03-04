@@ -1,5 +1,4 @@
 #include "container/CCFParser.h"
-
 #include "container/DecryptionException.h"
 #include "basics/aes.h"
 
