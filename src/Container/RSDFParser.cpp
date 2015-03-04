@@ -1,6 +1,6 @@
-#include "Container/RSDFParser.h"
+#include "container/RSDFParser.h"
 #include "basics/aes.h"
-#include "Logger.h"
+#include "basics/Logger.h"
 #include "basics/bio.h"
 
 #include <iostream>
@@ -90,7 +90,7 @@ std::vector<Package> RSDFParser::parse(const std::string& content)
 			break;
 		}
 		//Decrypt line with AES CFB
-		package.addFile(FileLink("unknown", aes.decrypt((unsigned char*)decoded, tmp_len, key_), -1));
+		package.addFile(FileInfo("unknown", aes.decrypt((unsigned char*)decoded, tmp_len, key_), -1));
 		length -= buffer_pos;
 		delete[] decoded;
 		delete[] result;

@@ -26,10 +26,15 @@ namespace cdpp {
 	***********************************************/
 	#define CDPP_AES_CBC_128 0x03
 	/********************************************//**
+	* \def CDPP_AES_CBC_256
+	* Define used to indicate that decrypt should use AES in CBC mode with 256bit key.
+	***********************************************/
+	#define CDPP_AES_CBC_256 0x04
+	/********************************************//**
 	* \def CDPP_AES_CFB_192
 	* Define used to indicate that decrypt should use AES in CFB mode with 192bit key.
 	***********************************************/
-	#define CDPP_AES_CFB_192 0x04
+	#define CDPP_AES_CFB_192 0x05
 	/********************************************//**
 	* \def CDPP_LAST_CHIPHER
 	* Define used to indicate that decrypt should use the last chipher that was used.

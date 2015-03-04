@@ -112,7 +112,7 @@ void bio::Base64Decode(const char* b64message, char* buffer)
 	BIO_set_flags(bmem, BIO_FLAGS_BASE64_NO_NL);
 	int len = BIO_read(bmem, buffer, decodeLen);
 	BIO_free_all(bmem);
-	BIO_free(b64);
+	//BIO_free(b64);
 	buffer[decodeLen] = '\0';
 	if(len != decodeLen)
 		throw std::length_error("Base64Decode: Length != Calculated length");
@@ -130,7 +130,7 @@ std::string bio::Base64Decode(const std::string& b64string)
 	BIO_set_flags(bmem, BIO_FLAGS_BASE64_NO_NL);
 	int len = BIO_read(bmem, buffer, decodeLen);
 	BIO_free_all(bmem);
-	BIO_free(b64);
+	//BIO_free(b64);
 	buffer[decodeLen] = '\0';
 	if(len != decodeLen)
 		throw std::length_error("Base64Decode: Length != Calculated length");
@@ -156,7 +156,7 @@ std::string bio::Base64Encode(const char* message)
 	//"Suspress warning"
 	encodedSize = BIO_flush(bio);
 	BIO_free_all(bio);
-	BIO_free(b64);
+	//BIO_free(b64);
 	fclose(stream);
 	std::string ret(buffer);
 	delete[] buffer;

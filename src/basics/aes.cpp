@@ -48,6 +48,7 @@ std::string AES::decrypt(const std::string& b64String, const unsigned char* key,
 		bio::Base64Decode(b64String.c_str(), decoded);
 	} catch (std::length_error& le) {
 		logger_.debug("Length error in decrypt AES -> from B64");
+		delete[] decoded;
 		throw std::length_error(le.what() + std::string("\nCalled by: AES::decrypt(str)"));
 	}
 	std::string ret;
@@ -55,12 +56,15 @@ std::string AES::decrypt(const std::string& b64String, const unsigned char* key,
 		ret = decrypt((unsigned char*)decoded, tmp_len, key, iv, chipherType);
 	}
 	catch (std::invalid_argument& ia) {
+		delete[] decoded;
 		throw std::invalid_argument(ia.what() + std::string("\nCalled by: AES::decrypt(str)"));
 	}
 	catch (std::logic_error& lo) {
+		delete[] decoded;
 		throw std::logic_error(lo.what() + std::string("\nCalled by: AES::decrypt(str)"));
 	}
 	catch (std::runtime_error& rt) {
+		delete[] decoded;
 		throw std::runtime_error(rt.what() + std::string("\nCalled by: AES::decrypt(str)"));
 	}
 	delete[] decoded;
@@ -92,12 +96,14 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
 
 	if (!(ctx = EVP_CIPHER_CTX_new())) {
         logger_.debug("Could not initalisize the Cipher Context.");
+        delete[] decrypted;
         throw std::runtime_error("AES::decrypt(): Openssl could not be initialisized.");
     }
 	/* Initialise the decryption operation. */
 	if(1 != EVP_DecryptInit_ex(ctx, cipher, NULL, key, iv_)) {
 		logger_.debug("Could not setup decryption, maybe key or iv are not valid.");
 		cleanup(ctx);
+		delete[] decrypted;
 		throw std::invalid_argument("AES::decrypt(): Key or IV are not valid.");
 	}
 	EVP_CIPHER_CTX_set_padding(ctx, false);
@@ -109,6 +115,7 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
     if(1 != EVP_DecryptUpdate(ctx, decrypted, &tmp_len, encrypted, length)) {
         logger_.debug("Failed to decrypt message.");
         cleanup(ctx);
+        delete[] decrypted;
         throw std::logic_error("AES::decrypt(): Can not decrypt message");
     }
     /* Finalise the decryption. Further plaintext bytes may be written at
@@ -118,6 +125,7 @@ std::string AES::decrypt(unsigned char* encrypted, int length, const unsigned ch
     if (1 != EVP_DecryptFinal_ex(ctx, decrypted + tmp_len, &tmp_len)) {
         logger_.debug("Failed to finalize the decryption.");
         cleanup(ctx);
+        delete[] decrypted;
         throw std::logic_error("AES::decrypt(): Can not finalize decryption.");
     }
 	cleanup(ctx);
@@ -154,6 +162,9 @@ const EVP_CIPHER* AES::getChipher(const uint8_t chipherType)
 		}
 		case CDPP_AES_CBC_128: {
 			return EVP_aes_128_cbc();
+		}
+		case CDPP_AES_CBC_256: {
+			return EVP_aes_256_cbc();
 		}
 		case CDPP_AES_CFB_192: {
 			return EVP_aes_192_cfb8();

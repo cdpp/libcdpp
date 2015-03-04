@@ -1,6 +1,8 @@
-#include "Container/CCFParser.h"
+#include "container/CCFParser.h"
 
-#include "Container/DecryptionException.h"
+#include "container/DecryptionException.h"
+#include "basics/aes.h"
+
 #include <pugixml.hpp>
 #include <fstream>
 #include <cstring>
@@ -47,7 +49,17 @@ std::vector<Package> CCFParser::parse(const std::string& content)
 			logger_.error("Catched exception in CCFParser::parse():", le);
 		}
 		return packages;
-	} else
+	} else {
+		try {
+			packages = parseCCF5(content);
+		} catch (CdppParseException cp) {
+			//logger_.
+		}
+		if (packages.empty()) {
+			//packages = parseWithDLC();
+		}
+	}
+	if (packages.empty())
 		logger_.debug("CCF Not Known");
 	return packages;
 }
@@ -77,7 +89,7 @@ std::vector<Package> CCFParser::parseCCF3(const std::string& content)
 	of.close();
 	std::vector<Package> packages;
 	try {
-		packages = ccf3DoXML(decoded.substr(0, decoded.length() - padding));
+		packages = ccfDoXML(decoded.substr(0, decoded.length() - padding));
 	} catch (CdppException ex) {
 		logger_.error("Catched exception in CCFParser::parseCCF3():", ex);
 	}
@@ -122,14 +134,14 @@ std::string CCFParser::ccf3DoLine(std::string line, uint32_t& magic)
 	return line;
 }
 
-std::vector<Package> CCFParser::ccf3DoXML(const std::string& xmlData)
+std::vector<Package> CCFParser::ccfDoXML(const std::string& xmlData)
 {
 	std::vector<Package> packages;
 	pugi::xml_document doc;
 	pugi::xml_parse_result result = doc.load_string(xmlData.c_str());
 	if (!result) {
-		logger_.debug(std::string("CCF 3.0 XML-Error: ") + result.description());
-		throw CdppIOException("CCFParser::ccf3DoXML(): CCF XML-Error");
+		logger_.debug(std::string("CCF XML-Error: ") + result.description());
+		throw CdppIOException("CCFParser::ccfDoXML(): CCF XML-Error");
 	}
 	pugi::xml_node content = doc.child("CryptLoad");
 	if(!content) {
@@ -147,7 +159,7 @@ std::vector<Package> CCFParser::ccf3DoXML(const std::string& xmlData)
 			}
 		}
 		for (pugi::xml_node download = pkg.child("Download"); download; download = download.next_sibling("Download")) {
-			FileLink m_file;
+			FileInfo m_file;
 			m_file.url = download.attribute("Url").value();
 			if (m_file.url.empty() ||
 				m_file.url.size() < strlen(download.child_value("Url")))
@@ -185,30 +197,27 @@ void CCFParser::swapBits(std::string& matrix)
 		}
 	}
 	matrix = ret;
-//  Wrong:
-//	for (size_t y = 0; y < 7; y++) {
-//		for (size_t x = (y + 1); x < 8; x++) {
-//			uint8_t mask   = 1 << (7-x);
-//			uint8_t buffer = matrix.at(y) & mask;
-//			if (buffer != 0) {
-//				mask   = 1 << (7-y);
-//				buffer = matrix.at(x) & mask;
-//				matrix[x] = matrix.at(x) | (1 << (7-y));
-//				if (buffer != 0) {
-//					matrix[y] = matrix.at(y) | (1 << (7-x));
-//				} else {
-//					matrix[y] = matrix.at(y) & ~(1 << (7-x));
-//				}
-//			} else {
-//				mask   = 1 << (7-y);
-//				buffer = matrix.at(x) & mask;
-//				matrix[x] = matrix.at(x) & (0xFF - (1 << (7-y)));
-//				if (buffer != 0) {
-//					matrix[y] = matrix.at(y) | (1 << (7-x));
-//				} else {
-//					matrix[y] = matrix.at(y) & ~(1 << (7-x));
-//				}
-//			}
-//		}
-//	}
+}
+
+std::vector<Package> CCFParser::parseCCF5(const std::string& content)
+{
+	const unsigned char key[] = {	0x5F, 0x67, 0x9C, 0x00, 0x54, 0x87, 0x37, 0xE1,
+									0x20, 0xE6, 0x51, 0x8A, 0x98, 0x1B, 0xD0, 0xBA,
+									0x11, 0xAF, 0x5C, 0x71, 0x9E, 0x97, 0x50, 0x29,
+									0x83, 0xAD, 0x6A, 0xA3, 0x8E, 0xD7, 0x21, 0xC3
+								};
+
+	const unsigned char iv[] =	{	0xE3, 0xD1, 0x53, 0xAD, 0x60, 0x9E, 0xF7, 0x35,
+									0x8D, 0x66, 0x68, 0x41, 0x80, 0xC7, 0x33, 0x1A
+								};
+	AES aes(CDPP_AES_CBC_256, iv);
+	std::string decrypted;
+	decrypted = aes.decrypt((unsigned char*)content.c_str(), content.length(), key);
+	std::vector<Package> packages;
+	try {
+		packages = ccfDoXML(decrypted);
+	} catch (CdppException cd) {
+		logger_.error("Catched Exception in CCFParser::parseCCF5()", cd);
+	}
+	return packages;
 }

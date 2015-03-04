@@ -32,6 +32,7 @@
 					<Add directory="include" />
 					<Add directory="thirdparty" />
 					<Add directory="include/Container" />
+					<Add directory="include/hoster" />
 				</Compiler>
 				<MakeCommands>
 					<Build command="" />
@@ -54,6 +55,7 @@
 					<Add option="-DBUILD_RELEASE" />
 					<Add directory="include" />
 					<Add directory="include/Container" />
+					<Add directory="include/hoster" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -74,16 +76,18 @@
 			<Add option="-lpugixml" />
 			<Add library="thirdparty/curlcpp/build/libcurlcpp.a" />
 		</Linker>
-		<Unit filename="include/Container/CCFParser.h" />
-		<Unit filename="include/Container/Container.h" />
-		<Unit filename="include/Container/DLCParser.h" />
-		<Unit filename="include/Container/DecryptionException.h" />
-		<Unit filename="include/Container/Package.h" />
-		<Unit filename="include/Container/RSDFParser.h" />
-		<Unit filename="include/Logger.h" />
+		<Unit filename="include/basics/Logger.h" />
 		<Unit filename="include/basics/aes.h" />
 		<Unit filename="include/basics/bio.h" />
 		<Unit filename="include/cdpp.h" />
+		<Unit filename="include/container/CCFParser.h" />
+		<Unit filename="include/container/Container.h" />
+		<Unit filename="include/container/DLCParser.h" />
+		<Unit filename="include/container/DecryptionException.h" />
+		<Unit filename="include/container/RSDFParser.h" />
+		<Unit filename="include/data/Package.h" />
+		<Unit filename="include/hoster/Hoster.h" />
+		<Unit filename="include/hoster/ShareOnlineBz.h" />
 		<Unit filename="src/Container/CCFParser.cpp" />
 		<Unit filename="src/Container/DLCParser.cpp" />
 		<Unit filename="src/Container/Package.cpp" />
@@ -91,6 +95,7 @@
 		<Unit filename="src/Logger.cpp" />
 		<Unit filename="src/basics/aes.cpp" />
 		<Unit filename="src/basics/bio.cpp" />
+		<Unit filename="src/hoster/ShareOnlineBz.cpp" />
 		<Unit filename="version.h" />
 		<Extensions>
 			<DoxyBlocks>

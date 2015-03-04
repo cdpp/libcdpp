@@ -1,4 +1,4 @@
-#include "Container/Package.h"
+#include "data/Package.h"
 
 using namespace cdpp;
 
@@ -12,7 +12,7 @@ Package::~Package()
 	//dtor
 }
 
-void Package::addFile(FileLink file)
+void Package::addFile(FileInfo file)
 {
 	files_.push_back(file);
 }
@@ -37,7 +37,7 @@ std::string Package::getPassword()
 	return password_;
 }
 
-std::vector<FileLink> Package::getFiles()
+std::vector<FileInfo> Package::getFiles()
 {
 	return files_;
 }

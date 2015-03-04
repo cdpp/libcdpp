@@ -1,5 +1,5 @@
-#include "Container/DLCParser.h"
-#include "Container/DecryptionException.h"
+#include "container/DLCParser.h"
+#include "container/DecryptionException.h"
 #include "basics/bio.h"
 #include "basics/aes.h"
 
@@ -219,7 +219,7 @@ std::vector<Package> DLCParser::getLinksFromXML(const std::string& xmlData)
 			throw CdppParseException(le.what() + std::string("Called by: DLCParser::getLinksFromXML()"));
 		}
 		for (pugi::xml_node file = pkg.child("file"); file; file = file.next_sibling("file")) {
-            FileLink m_file;
+            FileInfo m_file;
             try {
 				m_file.name = bio::Base64Decode(file.child_value("filename"));
 				m_file.url = bio::Base64Decode(file.child_value("url"));
