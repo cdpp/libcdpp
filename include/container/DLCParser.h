@@ -2,8 +2,8 @@
 #define DLCPARSER_H
 
 #include "Container.h"
-#include "Package.h"
-#include "../Logger.h"
+#include "data/Package.h"
+#include "../basics/Logger.h"
 
 #include <vector>
 #include <string>

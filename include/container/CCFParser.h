@@ -2,7 +2,7 @@
 #define CCFPARSER_H
 
 #include "Container.h"
-#include "../Logger.h"
+#include "../basics/Logger.h"
 #include <string>
 
 //Check if x86 architecture (GCC and MSVC) used for inline asm
@@ -43,7 +43,7 @@ namespace cdpp {
 			std::vector<Package> parseCCF5(const std::string& content);
 			std::string ccf3DoBlock(std::string block, uint32_t& magic);
 			std::string ccf3DoLine(std::string line, uint32_t& magic);
-			std::vector<Package> ccf3DoXML(const std::string& data);
+			std::vector<Package> ccfDoXML(const std::string& data);
 			void swapBits(std::string& matrix);
 			/* Basic functions -> maybe asm optimized */
 			inline void rotateLeft(uint32_t& in, uint8_t bits)
