@@ -15,7 +15,7 @@ namespace cdpp {
 			/** Default destructor */
 			virtual ~ShareOnlineBz();
 			bool checkFile(FileInfo& file);
-			bool checkFile(std::vector<FileInfo>& files);
+			bool checkFiles(std::vector<FileInfo>& files);
 		private:
 			Logger logger_ = Logger::getLogger();
 			std::vector<std::string> split(const std::string& str, const char delim);

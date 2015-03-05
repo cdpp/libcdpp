@@ -74,11 +74,13 @@
 			<Add option="-lssl" />
 			<Add option="-lcurl" />
 			<Add option="-lpugixml" />
+			<Add option="-ltidyp" />
 			<Add library="thirdparty/curlcpp/build/libcurlcpp.a" />
 		</Linker>
 		<Unit filename="include/basics/Logger.h" />
 		<Unit filename="include/basics/aes.h" />
 		<Unit filename="include/basics/bio.h" />
+		<Unit filename="include/basics/html.h" />
 		<Unit filename="include/cdpp.h" />
 		<Unit filename="include/container/CCFParser.h" />
 		<Unit filename="include/container/Container.h" />
@@ -88,14 +90,17 @@
 		<Unit filename="include/data/Package.h" />
 		<Unit filename="include/hoster/Hoster.h" />
 		<Unit filename="include/hoster/ShareOnlineBz.h" />
-		<Unit filename="src/Container/CCFParser.cpp" />
-		<Unit filename="src/Container/DLCParser.cpp" />
-		<Unit filename="src/Container/Package.cpp" />
-		<Unit filename="src/Container/RSDFParser.cpp" />
-		<Unit filename="src/Logger.cpp" />
+		<Unit filename="include/hoster/ZippyShareCom.h" />
+		<Unit filename="src/basics/Logger.cpp" />
 		<Unit filename="src/basics/aes.cpp" />
 		<Unit filename="src/basics/bio.cpp" />
+		<Unit filename="src/basics/html.cpp" />
+		<Unit filename="src/container/CCFParser.cpp" />
+		<Unit filename="src/container/DLCParser.cpp" />
+		<Unit filename="src/container/Package.cpp" />
+		<Unit filename="src/container/RSDFParser.cpp" />
 		<Unit filename="src/hoster/ShareOnlineBz.cpp" />
+		<Unit filename="src/hoster/ZippyShareCom.cpp" />
 		<Unit filename="version.h" />
 		<Extensions>
 			<DoxyBlocks>
@@ -111,7 +116,7 @@
 			<code_completion />
 			<debugger />
 			<AutoVersioning>
-				<Scheme minor_max="20" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Scheme minor_max="100" build_max="10" rev_max="100" rev_rand_max="1" build_times_to_increment_minor="100" />
 				<Settings autoincrement="1" date_declarations="1" use_define="1" update_manifest="1" do_auto_increment="0" ask_to_increment="1" language="C++" svn="0" svn_directory="" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 				<Code header_guard="VERSION_H" namespace="AutoVersion" prefix="" />

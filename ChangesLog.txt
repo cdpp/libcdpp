@@ -1,11 +1,21 @@
-29 Januar 2015
+05 March 2015
+   released version 0.1.5 of libcdpp
+
+     Change log:
+        -New: Hoster support
+        -Added: ShareOnline.biz support
+        -Added: ZippyShare.com support
+        -Cleaned: Directory names and structure
+        -New: Dependecy: tidyp (for html to XML)
+
+29 January 2015
    released version 0.1.4 of libcdpp
 
      Change log:
         -New: CCF 3.0 implementation
         -Fixed: Some memory leaks
 
-27 Januar 2015
+27 January 2015
    released version 0.1.3 of libcdownloader++
 
      Change log:

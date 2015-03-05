@@ -19,12 +19,12 @@ ShareOnlineBz::~ShareOnlineBz()
 bool ShareOnlineBz::checkFile(FileInfo& file)
 {
 	std::vector<FileInfo> fi({file});
-	bool ret = checkFile(fi);
+	bool ret = checkFiles(fi);
 	file = fi.at(0);
 	return ret;
 }
 
-bool ShareOnlineBz::checkFile(std::vector<FileInfo>& files)
+bool ShareOnlineBz::checkFiles(std::vector<FileInfo>& files)
 {
 	const std::string api("http://api.share-online.biz/linkcheck.php?md5=1");
 	std::string apiData("links=");
@@ -56,7 +56,7 @@ bool ShareOnlineBz::checkFile(std::vector<FileInfo>& files)
 	if (info.size() < 4) {
 		for (unsigned char i = 0; i < files.size(); i++)
 			files[i].status = FileStatus::FAILED;
-		logger_.debug("Could not resolve info: Maybe wrongg URL given.");
+		logger_.debug("Could not resolve info: Maybe wrong URL given.");
 		return false;
 	}
 	for (unsigned char i = 0; i < files.size(); i++) {

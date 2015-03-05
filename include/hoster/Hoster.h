@@ -7,9 +7,16 @@
 namespace cdpp {
 	class Hoster
 	{
-	public:
-		virtual bool checkFile(FileInfo& file) = 0;
-		virtual bool checkFile(std::vector<FileInfo>& files) = 0;
+		public:
+			virtual bool checkFile(FileInfo& file) = 0;
+			bool checkFiles(std::vector<FileInfo>& files)
+			{
+				bool failed = false;
+				for (auto file_itr = files.begin(); file_itr != files.end(); file_itr++) {
+					failed = !checkFile(*file_itr);
+				}
+				return !failed;
+			};
 	};
 }
 #endif // HOSTER_H_INCLUDED
