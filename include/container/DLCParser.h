@@ -34,14 +34,32 @@ namespace cdpp {
              ***********************************************/
             std::vector<cdpp::Package> parseFile(const std::string& filename);
 		private:
+			/* Methods */
+			/********************************************//**
+			 * \brief Request key from dlc server
+             * \param dlcKey key from dlc file
+             * \return key returned from server
+             ***********************************************/
 			std::string requestKey(const std::string& dlcKey);
+			/********************************************//**
+			 * \brief Decrypt given dlc content with key
+             * \param dlcContent Content of DLC file
+             * \param requestedKey Key requested from DLC server
+             * \return Decrypted DLC content
+             ***********************************************/
 			std::string decrypt(const std::string& dlcContent, const std::string& requestedKey);
+			/********************************************//**
+			 * \brief Get links from decrypted DLC file
+             * \param xmlData decrypted DLC data (is XML)
+             * \return A vector containing all packages in DLC
+             ***********************************************/
 			std::vector<Package> getLinksFromXML(const std::string& xmlData);
-			Logger logger_ = Logger::getLogger();
 
-			const unsigned char key_[16] = {0xeb, 0xda, 0x23, 0x7a, 0x3d, 0x87,
-											0xac, 0xcc, 0xf7, 0x2d, 0xcb, 0x61,
-											0x57, 0xfe, 0xe3, 0x14};
+			/* Attributes */
+			Logger logger_ = Logger::getLogger();
+			const unsigned char key_[16] =  {	0xc4, 0x6e, 0x50, 0x3a, 0x43, 0x6e,
+												0xc2, 0x14, 0x0e, 0x45, 0x8f, 0x3d,
+												0x46, 0xa0, 0x30, 0x77};
 	};
 }
 

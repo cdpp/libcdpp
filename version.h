@@ -4,10 +4,10 @@
 namespace AutoVersion{
 
 	//Date Version Types
-	#define DATE "29"
-	#define MONTH "01"
+	#define DATE "05"
+	#define MONTH "03"
 	#define YEAR "2015"
-	#define UBUNTU_VERSION_STYLE  "15.01"
+	#define UBUNTU_VERSION_STYLE  "15.03"
 
 	//Software Status
 	#define STATUS  "Alpha"
@@ -27,7 +27,6 @@ namespace AutoVersion{
 
 	//These values are to keep track of your versioning state, don't modify them.
 	#define BUILD_HISTORY  4
-
 
 }
 #endif //VERSION_H

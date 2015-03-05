@@ -1,5 +1,5 @@
 /*
-* This is public domain code.
+* This file (and content of this file) is public domain code.
 */
 #include "basics/aes.h"
 #include "basics/bio.h"

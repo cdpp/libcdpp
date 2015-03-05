@@ -49,7 +49,7 @@ namespace cdpp {
 			inline void rotateLeft(uint32_t& in, uint8_t bits)
 			{
 				#ifdef X86
-				//I know if have fun.
+				//I know I have fun.
 				asm ( "roll %[bi], %0;\n\t"
 					: "=a" (in)
 					: "0"(in), [bi]"cI" (bits)
