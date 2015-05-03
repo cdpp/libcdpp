@@ -52,7 +52,7 @@ bool ZippyShareCom::checkFile(FileInfo& file)
 	} catch (curl_easy_exception exc) {
 		// Print errors, if any
 		std::string error;
-		for(std::pair<std::string, std::string> trace : exc.what())
+		for(std::pair<std::string, std::string> trace : exc.get_traceback())
 			error += std::string("ERROR: ") + trace.first + std::string(" :::: FUNCTION: ") + trace.second + std::string("\n\t");
 		logger_.debug("requestKey(): Throws exception.", error);
 		throw CdppIOException("DLCParser::requestKey(): Could not resolve key from network");

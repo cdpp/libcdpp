@@ -139,7 +139,7 @@ std::string DLCParser::requestKey(const std::string& dlcKey)
     } catch (curl_easy_exception exc) {
         // Print errors, if any
         std::string error;
-        for(std::pair<std::string, std::string> trace : exc.what())
+        for(std::pair<std::string, std::string> trace : exc.get_traceback())
 			error += std::string("ERROR: ") + trace.first + std::string(" :::: FUNCTION: ") + trace.second + std::string("\n\t");
 
         logger_.debug("requestKey(): Throws exception.", error);
@@ -149,6 +149,7 @@ std::string DLCParser::requestKey(const std::string& dlcKey)
 	//Response should contain the key wrapped in <rc></rc> tags
 	std::regex tags("<rc>([A-Za-z0-9\\+\\/]+={0,2})<\\/rc>");
 	std::string result = resultStream.str();
+	std::cout << result << std::endl;
 	std::regex_search(result, sm, tags);
 	if(sm.size() < 2) {
 		logger_.debug("Resolving key error: 0x0" + std::to_string(__LINE__));

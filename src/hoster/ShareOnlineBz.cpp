@@ -62,7 +62,7 @@ bool ShareOnlineBz::checkFiles(std::vector<FileInfo>& files)
 	} catch (curl_easy_exception exc) {
 		// Print errors, if any
 		std::string error;
-		for(std::pair<std::string, std::string> trace : exc.what())
+		for(std::pair<std::string, std::string> trace : exc.get_traceback())
 			error += std::string("ERROR: ") + trace.first + std::string(" :::: FUNCTION: ") + trace.second + std::string("\n\t");
 
 		logger_.error("requestKey(): Throws exception.", error);
